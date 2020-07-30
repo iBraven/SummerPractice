@@ -5,12 +5,11 @@ import pandas as pd
 from skimage import io
 import numpy as np
 from torch.utils.data import Dataset
-from PIL import Image
 
 
 class HandsDataset(Dataset):
     def __init__(self, csv_file, rows=None, transform=None):
-        self.frame = pd.read_csv(csv_file, header=None, nrows=rows)
+        self.frame = pd.read_csv(csv_file, header=None, nrows=rows, skiprows=150000)
         self.transform = transform
 
     def __len__(self):
@@ -25,11 +24,12 @@ class HandsDataset(Dataset):
         points = np.asarray(points)
         points = points.astype('float').reshape(-1, 21, 3)
 
-        sample = {'image': image, 'points': points}
         if self.transform:
-            sample['image'] = Image.fromarray(sample['image'])
-            sample['image'] = self.transform(sample['image'])
-            sample['image'] = np.asarray(sample['image'])
+            # TODO: Optimizeaza operatiile de transformare
+            # image = Image.fromarray(image)
+            image = self.transform(image)
+            # image = np.asarray(image)/(255 / 2) - 1
+        sample = {'image': image, 'points': points}
 
         return sample
 
