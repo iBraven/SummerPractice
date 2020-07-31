@@ -9,7 +9,8 @@ from torch.utils.data import Dataset
 
 class HandsDataset(Dataset):
     def __init__(self, csv_file, rows=None, transform=None):
-        self.frame = pd.read_csv(csv_file, header=None, nrows=rows, skiprows=150000)
+        # super.__init__(self)
+        self.frame = pd.read_csv(csv_file, header=None, nrows=rows)
         self.transform = transform
 
     def __len__(self):
@@ -25,10 +26,7 @@ class HandsDataset(Dataset):
         points = points.astype('float').reshape(-1, 21, 3)
 
         if self.transform:
-            # TODO: Optimizeaza operatiile de transformare
-            # image = Image.fromarray(image)
             image = self.transform(image)
-            # image = np.asarray(image)/(255 / 2) - 1
         sample = {'image': image, 'points': points}
 
         return sample
