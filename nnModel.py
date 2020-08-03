@@ -5,22 +5,42 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
+        # in shape (1,256,256)
+        self.conv1 = nn.Conv2d(1, 8, 5)
+        # in shape (8,252,252)
         self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        # in shape (8,126,126)
+        self.conv2 = nn.Conv2d(8, 16, 5)
+        # in shape (16,122,122)
+        # urmeaza pool ->
+        # in shape (16,61,61)
+        self.conv3 = nn.Conv2d(16, 24, 6)
+        # in shape (24,56,56)
+        # urmeaza pool ->
+        # in shape (24,28,28)
+        self.conv4 = nn.Conv2d(24, 32, 5)
+        # in shape (32,24,24)
+        # urmeaza pool ->
+
+        # in shape (32,12,12)
+        # layer 4608 nodes -> 1024 nodes
+        self.fc1 = nn.Linear(32 * 12 * 12, 1024)
+        # layer 1024 nodes -> 256 nodes
+        self.fc2 = nn.Linear(1024, 256)
+        # layer 256 nodes -> 63 nodes
+        self.fc3 = nn.Linear(256, 63)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
+        x = self.pool(F.relu(self.conv3(x)))
+        x = self.pool(F.relu(self.conv4(x)))
+        # flatten
+        x = x.view(-1, 32 * 12 * 12)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-
-
-net = Net()
-print(net)
+#
+# net = Net()
+# print(net)
