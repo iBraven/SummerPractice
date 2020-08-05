@@ -23,7 +23,7 @@ class HandsDataset(Dataset):
         image = io.imread(img_name)
         points = self.frame.iloc[idx, 1:]
         points = np.asarray(points)
-        points = points.astype('float').reshape(-1, 21, 3)
+        points = points.astype('float').reshape(63)
 
         if self.transform:
             image = self.transform(image)
