@@ -2,8 +2,7 @@ from torchvision.transforms import transforms
 import matplotlib.pyplot as plt
 from Dataset import HandsDataset
 from torch.utils.data import DataLoader, random_split
-from math import ceil
-from nnModel import Net
+
 
 # nr_rows = 111
 # batch_size = 16
@@ -13,6 +12,7 @@ transform = transforms.Compose([
     transforms.ToPILImage(),
     # transforms.ColorJitter(contrast=1.6, brightness=0.2),
     transforms.Grayscale(),
+    transforms.Resize(128),
     transforms.ToTensor(),
     transforms.Normalize([0.5], [0.5])])
 
@@ -33,6 +33,10 @@ def load_data(path, nr_rows = None, batch_size = 16, train_ratio = 0.8, transfor
 def show_batch(sample_batched):
     images = sample_batched['image']
     for i in range(len(images)):
-        plt.subplot(4, 4, i+1)
-        plt.imshow(images[i].reshape(256, 256), cmap="gray")
+        plt.subplot(8, 4, i+1)
+        plt.imshow(images[i].reshape(128, 128), cmap="gray")
 
+# train_loader, test_loader = load_data(path, nr_rows=None, transform=transform, batch_size=32)
+# data = iter(train_loader)
+# show_batch(next(data))
+# plt.show()
