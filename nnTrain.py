@@ -46,7 +46,7 @@ for epoch in range(15):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
-        if i % 20 == 19:    # print every 100 batches
+        if i % 100 == 99:    # print every 100 batches
             print('[%d, %6d] loss: %.4f' %
                   (epoch + 1, (i + 1)*batch_size, running_loss / 100))
             running_loss = 0.0
