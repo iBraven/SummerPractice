@@ -2,25 +2,35 @@ from torchvision.transforms import transforms
 import matplotlib.pyplot as plt
 from Dataset import HandsDataset
 from torch.utils.data import DataLoader, random_split
-from math import ceil
-from nnModel import Net
 
-# nr_rows = 111
-# batch_size = 16
-# train_ratio = 0.9
-path = 'c:\\Users\\rober\\PycharmProjects\\TorchTest\\test.csv'
-transform = transforms.Compose([
+
+rows = 10000
+reshape_size = 128
+batch = 16
+train_test_ratio = 0.9
+csv_path = 'c:\\Users\\rober\\PycharmProjects\\TorchTest\\points2D.csv'
+img_transform = transforms.Compose([
     transforms.ToPILImage(),
     # transforms.ColorJitter(contrast=1.6, brightness=0.2),
     transforms.Grayscale(),
+    transforms.Resize(reshape_size),
     transforms.ToTensor(),
     transforms.Normalize([0.5], [0.5])])
 
-def load_data(path, nr_rows = None, batch_size = 16, train_ratio = 0.8, transform = None):
+
+def load_data(path, nr_rows=None, batch_size=16, train_ratio=0.8, transform=None):
+    '''
+    :param path:path for csv file
+    :param nr_rows:get nr_rows from csv file
+                    None = get all from file
+    :param batch_size:size of batch for data loader
+    :param train_ratio:ratio to split data into train and test
+    :param transform:tranformation for image
+    :return:Loader for train_set and test_set
+    '''
     hands_set = HandsDataset(path,
                              rows=nr_rows,
                              transform=transform)
-
     train_len = int(train_ratio * len(hands_set))
     train_set, test_set = random_split(hands_set, [train_len, len(hands_set) - train_len])
     print(len(test_set), len(train_set), len(hands_set))
@@ -30,9 +40,29 @@ def load_data(path, nr_rows = None, batch_size = 16, train_ratio = 0.8, transfor
 
     return train_loader, test_loader
 
-def show_batch(sample_batched):
+
+def show_batch(sample_batched, net_data=None):
     images = sample_batched['image']
-    for i in range(len(images)):
+    points = sample_batched['points']
+    size = (len(images)) if len(images) < 16 else 16
+    for i in range(size):
         plt.subplot(4, 4, i+1)
-        plt.imshow(images[i].reshape(256, 256), cmap="gray")
+        plt.imshow(images[i].reshape(reshape_size, reshape_size), cmap="gray")
+        points[i] = denormalize_points(points[i], reshape_size)
+        plt.scatter(points[i][::2], points[i][1::2], s=1.5, c='blue')
+        if net_data is not None:
+            net_data[i] = denormalize_points(net_data[i], reshape_size)
+            plt.scatter(net_data[i][::2], net_data[i][1::2], s=0.9, c='red')
+    plt.show()
+
+
+def denormalize_points(points, out_shape=128):
+    return (points + 1) * out_shape / 2
+
+
+# train, test = load_data(csv_path, nr_rows=rows, transform=img_transform, batch_size=32)
+# data = next(iter(train))
+# show_batch(data)
+#
+# print(data['points'])
 
