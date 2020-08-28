@@ -2,7 +2,7 @@
 import torch
 
 import LoadData
-import nnModel
+import Model
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -14,10 +14,12 @@ def num_correct(net, test_set):
             images, points = data['image'].to(device), data['points'].to(device)
             output = net(images)
             LoadData.show_batch({'image': images.to('cpu'), 'points': points.to('cpu')}, output.to('cpu'))
+            if i == 5:
+                break
 
 
 def test_model(test_set, net=None, path=None):
-    test_net = nnModel.Net().to(device)
+    test_net = Model.Net().to(device)
     if not (net or path):
         print('Fara argumente valide')
         return

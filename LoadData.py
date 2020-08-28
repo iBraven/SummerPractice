@@ -19,7 +19,7 @@ img_transform = transforms.Compose([
 
 
 def load_data(path, nr_rows=None, batch_size=16, train_ratio=0.8, transform=None):
-    '''
+    """
     :param path:path for csv file
     :param nr_rows:get nr_rows from csv file
                     None = get all from file
@@ -27,7 +27,7 @@ def load_data(path, nr_rows=None, batch_size=16, train_ratio=0.8, transform=None
     :param train_ratio:ratio to split data into train and test
     :param transform:tranformation for image
     :return:Loader for train_set and test_set
-    '''
+    """
     hands_set = HandsDataset(path,
                              rows=nr_rows,
                              transform=transform)
@@ -44,15 +44,17 @@ def load_data(path, nr_rows=None, batch_size=16, train_ratio=0.8, transform=None
 def show_batch(sample_batched, net_data=None):
     images = sample_batched['image']
     points = sample_batched['points']
-    size = (len(images)) if len(images) < 16 else 16
+    size = (len(images)) if len(images) < 4 else 4
+    points = denormalize_points(points, reshape_size)
+    if net_data is not None:
+        net_data = denormalize_points(net_data, reshape_size)
     for i in range(size):
-        plt.subplot(4, 4, i+1)
+        plt.subplot(2, 2, i+1)
         plt.imshow(images[i].reshape(reshape_size, reshape_size), cmap="gray")
-        points[i] = denormalize_points(points[i], reshape_size)
         plt.scatter(points[i][::2], points[i][1::2], s=1.5, c='blue')
         if net_data is not None:
-            net_data[i] = denormalize_points(net_data[i], reshape_size)
             plt.scatter(net_data[i][::2], net_data[i][1::2], s=0.9, c='red')
+
     plt.show()
 
 
@@ -65,4 +67,3 @@ def denormalize_points(points, out_shape=128):
 # show_batch(data)
 #
 # print(data['points'])
-

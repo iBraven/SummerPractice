@@ -27,23 +27,22 @@ class Net(nn.Module):
         self.out = nn.Linear(256, out_shape)
         self.drop30 = nn.Dropout(0.3)
         self.drop20 = nn.Dropout(0.2)
-        self.drop10 = nn.Dropout(0.1)
+        self.drop40 = nn.Dropout(0.4)
         self.conv2_bn = nn.BatchNorm2d(16)
         self.fc2_bn = nn.BatchNorm1d(256)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = F.relu(self.conv3(x))
+        x = self.pool(F.tanh(self.conv1(x)))
+        x = self.pool(F.tanh(self.conv2(x)))
+        x = F.tanh(self.conv3(x))
         # print(f'conv3: {x.shape}')
         # flatten
         x = x.view(-1, 24 * 25 * 25)
-        x = F.relu(self.fc1(x))
-        x = self.drop30(x)
-        x = F.relu(self.fc2(x))
-        x = self.drop10(x)
-        x = F.relu(self.fc2_bn(self.fc3(x)))
-        x = self.drop10(x)
+        x = F.tanh(self.fc1(x))
+        x = self.drop40(x)
+        x = F.tanh(self.fc2(x))
+        x = self.drop20(x)
+        x = F.tanh(self.fc2_bn(self.fc3(x)))
         x = self.out(x)
         return x
 #
