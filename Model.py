@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch.nn.functional as F
 import torch
 
 class Net(nn.Module):
@@ -16,7 +15,7 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(25 * 15 * 15, 1024)
         self.fc2 = nn.Linear(1024, 1024)
         self.fc3 = nn.Linear(1024, 256)
-        self.out = nn.Linear(256, 42)
+        self.out = nn.Linear(256, out_shape)
 
         self.drop20 = nn.Dropout(0.2)
         self.drop30 = nn.Dropout(0.3)
@@ -31,7 +30,6 @@ class Net(nn.Module):
         x = torch.tanh(self.conv2_bn(self.conv3(x)))
         x = torch.tanh(self.drop2d(self.conv4(x)))
         x = self.pool(torch.tanh(self.conv5(x)))
-        # print(f'conv4: {x.shape}')
         # flatten
         x = x.view(-1, 25 * 15 * 15)
         x = torch.tanh(self.fc1(x))
@@ -42,8 +40,3 @@ class Net(nn.Module):
         x = torch.tanh(self.out(x))
         return x
 
-# net = Net()
-# input = torch.rand(2, 1, 128, 128)
-# print(input.shape)
-# out = net(input)
-# print(out)

@@ -8,7 +8,7 @@ import Model
 import nnTest
 
 batch_size = 32
-n_rows = 5000
+n_rows = 500
 learning_rate = 0.001
 decay_rate = 0.8
 path = 'D:\\Model\\'     # Adauga path pentru salvare model
@@ -23,13 +23,13 @@ torch.backends.cudnn.enabled = False
 torch.backends.cudnn.benchmark = True
 net = Model.Net()
 net = net.to(device)
-# criterion = nn.MultiLabelSoftMarginLoss()
 criterion = nn.MSELoss(reduction='sum')
+
 # Optimizer and exponential learning rate
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
 lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=decay_rate)
 
-for epoch in range(5):  # loop over the dataset multiple times
+for epoch in range(2):  # loop over the dataset multiple times
 
     running_loss = 0.0
     print(f'epoch: {epoch + 1}, learning rate:', end=' ')
